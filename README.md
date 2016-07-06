@@ -1,1 +1,1 @@
-# angularInfiniteScroll
+# ngInfiniteScroll
