@@ -15,12 +15,12 @@ angular.module('ngInfiniteScroll', [])
             });
 
             $scope.$on('$destroy', function() {
-                container.removeEventListener('scroll', self.checkBounds);
+                $element.off('scroll', self.checkBounds);
             });
             
             function onInfinite() {
                 self.isLoading = true;
-                $scope.$parent && $scope.$parent.$apply($attrs.infiniteScroll || '');
+                $scope.$apply($attrs.infiniteScroll || '');
             }
 
             function throttle(fn, wait) {
@@ -67,7 +67,7 @@ angular.module('ngInfiniteScroll', [])
 
             function calculateMaxValue(maximum) {
                 var distance = ($attrs.distance || '2.5%').trim();
-                var isPercent = distance.indexOf('%') !== -1;
+                var isPercent = distance.indexOf('%') > -1;
                 return isPercent
                         ? maximum * (1 - parseFloat(distance) / 100)
                         : maximum - parseFloat(distance);
@@ -77,12 +77,11 @@ angular.module('ngInfiniteScroll', [])
         return {
             require: 'infiniteScroll',
             controller: 'InfiniteScrollCtrl',
-            scope: true,
-            link: function ($scope, $element, $attrs, ctrl) {
-                $element[0].addEventListener('scroll', ctrl.checkBounds);
+            link: function (scope, element, attrs, ctrl) {
+                element.on('scroll', ctrl.checkBounds);
 
-                if ($attrs.immediateCheck != null) {
-                    var immediateCheck = $scope.$eval($attrs.immediateCheck);
+                if (attrs.immediateCheck != null) {
+                    var immediateCheck = scope.$eval(attrs.immediateCheck);
                 }
                 immediateCheck && $timeout(function () { ctrl.checkBounds(); });
             }
